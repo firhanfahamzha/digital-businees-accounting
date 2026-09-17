@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Digital Business Ecosystem for Accounting Teacher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #ffffff; --bg-soft: #f8fafc;
+    --ink: #0f172a; --ink-soft: #475569; --ink-mute: #94a3b8;
+    --line: #e2e8f0; --line-soft: #f1f5f9;
+    --blue: #2563eb; --blue-soft: #dbeafe;
+    --amber: #d97706; --amber-soft: #fef3c7;
+    --green: #059669; --green-soft: #d1fae5;
+    --red: #dc2626; --red-soft: #fee2e2;
+    --violet: #7c3aed; --violet-soft: #ede9fe;
+    --pink: #db2777; --pink-soft: #fce7f3;
+    --ease: cubic-bezier(.4,0,.2,1);
+    --ease-out: cubic-bezier(.16,1,.3,1);
+  }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.011em;
+  }
+
+  #ambiance { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: .32;
+    animation: drift 24s var(--ease) infinite;
+  }
+  .blob.b1 { width: 420px; height: 420px; background: #bfdbfe; top: -120px; left: -100px; }
+  .blob.b2 { width: 380px; height: 380px; background: #fde68a; bottom: -140px; right: -80px; animation-delay: -8s; }
+  .blob.b3 { width: 320px; height: 320px; background: #bbf7d0; top: 40%; right: 30%; opacity: .22; animation-delay: -16s; }
+  @keyframes drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(60px,-40px) scale(1.1); }
+    66% { transform: translate(-40px,50px) scale(.95); }
+  }
+
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: linear-gradient(90deg, #2563eb, #7c3aed, #d97706);
+    width: 0; z-index: 100;
+    transition: width .6s var(--ease-out);
+    border-radius: 0 3px 3px 0;
+  }
+
+  #deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
+  .slide {
+    position: absolute; inset: 0;
+    padding: 6vh 7vw 12vh;
+    display: flex; flex-direction: column; justify-content: center;
+    opacity: 0; pointer-events: none; visibility: hidden;
+    transition: opacity .5s var(--ease-out), transform .6s var(--ease-out);
+    transform: translateY(24px);
+    overflow-y: auto; overscroll-behavior: contain;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; visibility: visible; transform: translateY(0); }
+  .slide > * { opacity: 0; transform: translateY(18px); }
+  .slide.active > * { animation: rise .7s var(--ease-out) both; }
+  .slide.active > *:nth-child(1) { animation-delay: .08s; }
+  .slide.active > *:nth-child(2) { animation-delay: .16s; }
+  .slide.active > *:nth-child(3) { animation-delay: .24s; }
+  .slide.active > *:nth-child(4) { animation-delay: .32s; }
+  .slide.active > *:nth-child(5) { animation-delay: .40s; }
+  .slide.active > *:nth-child(6) { animation-delay: .48s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+  h1 { font-size: clamp(1.9rem, 4.4vw, 3.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; color: var(--ink); }
+  h2 { font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; color: var(--ink); margin-bottom: 1.4rem; }
+  h3.kicker {
+    font-size: .78rem; font-weight: 600; color: var(--blue);
+    letter-spacing: .12em; text-transform: uppercase; margin-bottom: .8rem;
+    display: inline-flex; align-items: center; gap: .5rem;
+  }
+  h3.kicker::before { content: ''; width: 20px; height: 2px; background: var(--blue); border-radius: 2px; }
+  p { color: var(--ink-soft); font-size: 1rem; }
+  .lead { font-size: clamp(1rem, 1.4vw, 1.18rem); color: var(--ink-soft); margin-top: .9rem; max-width: 60ch; }
+  strong { color: var(--ink); font-weight: 600; }
+  .accent { color: var(--blue); }
+  .amber { color: var(--amber); }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .violet { color: var(--violet); }
+
+  .grid { display: grid; gap: 1.1rem; margin-top: 1.2rem; }
+  .g-2 { grid-template-columns: repeat(2, 1fr); }
+  .g-3 { grid-template-columns: repeat(3, 1fr); }
+  .g-4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 900px) {
+    .g-3, .g-4 { grid-template-columns: repeat(2, 1fr); }
+    .g-2 { grid-template-columns: 1fr; }
+    .slide { padding: 8vh 6vw 14vh; }
+  }
+  @media (max-width: 560px) { .g-3, .g-4 { grid-template-columns: 1fr; } }
+  .divider { height: 1px; background: var(--line); margin: 1.4rem 0; }
+
+  .card {
+    background: #fff; border: 1px solid var(--line);
+    padding: 1.4rem 1.5rem; border-radius: 16px;
+    transition: transform .35s var(--ease-out), box-shadow .35s var(--ease-out), border-color .35s var(--ease-out);
+    box-shadow: 0 1px 2px rgba(15,23,42,.03);
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px -12px rgba(15,23,42,.15), 0 4px 12px -6px rgba(15,23,42,.08);
+    border-color: #cbd5e1;
+  }
+  .card .num { font-size: .78rem; font-weight: 700; color: var(--blue); letter-spacing: .08em; margin-bottom: .4rem; display: inline-flex; align-items: center; gap: .35rem; }
+  .card h4 { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: .45rem; letter-spacing: -0.01em; }
+  .card p { font-size: .9rem; color: var(--ink-soft); line-height: 1.5; }
+  .card .big { font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; color: var(--ink); }
+  .card.tint-blue { background: linear-gradient(180deg, #f0f6ff 0%, #fff 60%); border-color: #dbeafe; }
+  .card.tint-amber { background: linear-gradient(180deg, #fffbeb 0%, #fff 60%); border-color: #fde68a; }
+  .card.tint-green { background: linear-gradient(180deg, #ecfdf5 0%, #fff 60%); border-color: #a7f3d0; }
+  .card.tint-red { background: linear-gradient(180deg, #fef2f2 0%, #fff 60%); border-color: #fecaca; }
+  .card.tint-violet { background: linear-gradient(180deg, #f5f3ff 0%, #fff 60%); border-color: #ddd6fe; }
+  .card.tint-pink { background: linear-gradient(180deg, #fdf2f8 0%, #fff 60%); border-color: #fbcfe8; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-top: 1.2rem; }
+  @media (max-width: 800px) { .compare { grid-template-columns: 1fr; } }
+  .compare > div { padding: 1.6rem; border-radius: 16px; background: #fff; border: 1px solid var(--line); }
+  .compare .old { border-left: 4px solid var(--red); background: linear-gradient(180deg, #fef2f2 0%, #fff 40%); }
+  .compare .new { border-left: 4px solid var(--green); background: linear-gradient(180deg, #ecfdf5 0%, #fff 40%); }
+  .compare h4 { font-size: 1rem; font-weight: 700; margin-bottom: .9rem; }
+  .compare ul { list-style: none; }
+  .compare li { font-size: .92rem; color: var(--ink-soft); padding: .35rem 0 .35rem 1.5rem; position: relative; }
+  .compare li::before { content: ''; position: absolute; left: 0; top: .75rem; width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .5; }
+  .compare .old li::before { background: var(--red); opacity: .6; }
+  .compare .new li::before { background: var(--green); opacity: .6; }
+
+  .flow { display: flex; align-items: stretch; gap: .6rem; flex-wrap: wrap; margin-top: 1.2rem; }
+  .flow .step {
+    background: #fff; border: 1px solid var(--line);
+    padding: 1rem 1.1rem; border-radius: 14px; font-size: .88rem;
+    flex: 1; min-width: 130px; color: var(--ink-soft);
+    transition: all .3s var(--ease-out); position: relative;
+  }
+  .flow .step:hover { transform: translateY(-3px); border-color: var(--blue); box-shadow: 0 10px 24px -12px rgba(37,99,235,.3); }
+  .flow .step .n { display: inline-block; color: var(--blue); font-weight: 700; font-size: .72rem; letter-spacing: .1em; margin-bottom: .3rem; }
+  .flow .arrow { align-self: center; color: var(--ink-mute); font-size: 1.2rem; user-select: none; }
+
+  ul.clean { list-style: none; margin-top: 1rem; }
+  ul.clean li {
+    padding: .7rem 0 .7rem 2rem; position: relative;
+    color: var(--ink-soft); font-size: .98rem;
+    border-bottom: 1px solid var(--line-soft);
+    transition: padding-left .3s var(--ease-out), color .3s var(--ease-out);
+  }
+  ul.clean li:hover { padding-left: 2.4rem; color: var(--ink); }
+  ul.clean li:last-child { border-bottom: none; }
+  ul.clean li::before {
+    content: ''; position: absolute; left: .5rem; top: 1.1rem;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--blue); box-shadow: 0 0 0 4px var(--blue-soft);
+    transition: transform .3s var(--ease-out);
+  }
+  ul.clean li:hover::before { transform: scale(1.3); }
+
+  .stat { background: #fff; border: 1px solid var(--line); padding: 1.5rem; border-radius: 16px; transition: all .35s var(--ease-out); }
+  .stat:hover { transform: translateY(-4px); border-color: var(--blue); box-shadow: 0 14px 32px -14px rgba(37,99,235,.28); }
+  .stat .value { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.05; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .stat .label { color: var(--ink-soft); font-size: .85rem; margin-top: .5rem; line-height: 1.4; }
+
+  .tabs { display: flex; gap: .5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .tab {
+    background: #fff; border: 1px solid var(--line); color: var(--ink-soft);
+    padding: .65rem 1.15rem; border-radius: 999px; cursor: pointer;
+    font-size: .88rem; font-weight: 500; font-family: inherit;
+    transition: all .25s var(--ease-out);
+  }
+  .tab:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-1px); }
+  .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); box-shadow: 0 8px 20px -8px rgba(15,23,42,.4); }
+  .tab-content { display: none; animation: rise .5s var(--ease-out) both; }
+  .tab-content.active { display: block; }
+
+  .journal { width: 100%; border-collapse: collapse; margin-top: .6rem; font-size: .92rem; background: #fff; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .journal th, .journal td { padding: .85rem 1rem; text-align: left; border-bottom: 1px solid var(--line-soft); }
+  .journal th { color: var(--ink-mute); font-weight: 600; font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; background: var(--bg-soft); }
+  .journal tr:last-child td { border-bottom: none; }
+  .journal .debit { color: var(--blue); font-weight: 500; }
+  .journal .kredit { color: var(--green); font-weight: 500; }
+
+  pre.code {
+    background: #0f172a; color: #e2e8f0;
+    padding: 1.1rem 1.3rem; border-radius: 12px; overflow-x: auto;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: .84rem; line-height: 1.7;
+  }
+  .prompt {
+    background: var(--bg-soft); border: 1px solid var(--line);
+    padding: .85rem 1.1rem; border-radius: 10px;
+    font-size: .9rem; margin-bottom: .5rem; color: var(--ink-soft);
+    transition: all .25s var(--ease-out); cursor: pointer;
+  }
+  .prompt:hover { border-color: var(--blue); background: #fff; transform: translateX(4px); }
+  .prompt::before { content: '❯'; color: var(--blue); font-weight: 700; margin-right: .6rem; font-family: 'JetBrains Mono', monospace; }
+
+  .big-quote {
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+    line-height: 1.4; color: var(--ink); font-weight: 600;
+    letter-spacing: -0.02em;
+    border-left: 4px solid var(--blue); padding: .5rem 0 .5rem 1.3rem;
+    margin: 1.2rem 0;
+  }
+
+  /* ============ CONTROLS ============ */
+  #controls { position: fixed; bottom: 22px; right: 22px; display: flex; gap: 10px; align-items: center; z-index: 50; }
+  .btn {
+    background: #fff; border: 1px solid var(--line); color: var(--ink);
+    width: 48px; height: 48px; border-radius: 14px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-family: inherit;
+    transition: all .25s var(--ease-out);
+    box-shadow: 0 2px 6px rgba(15,23,42,.05);
+  }
+  .btn:hover, .btn:active {
+    background: var(--ink); color: #fff; border-color: var(--ink);
+    transform: translateY(-2px); box-shadow: 0 10px 24px -8px rgba(15,23,42,.35);
+  }
+  @media (max-width: 600px) { .btn { width: 52px; height: 52px; } #controls { bottom: 16px; right: 16px; } }
+
+  #dots {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px; z-index: 45;
+    padding: 8px 12px;
+    background: rgba(255,255,255,.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(15,23,42,.06);
+    max-width: 60vw; overflow-x: auto; scrollbar-width: none;
+  }
+  #dots::-webkit-scrollbar { display: none; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ink-mute); opacity: .4;
+    border: none; padding: 0; cursor: pointer;
+    transition: all .35s var(--ease-out); flex-shrink: 0;
+  }
+  .dot:hover { opacity: .8; transform: scale(1.3); }
+  .dot.active { background: var(--blue); opacity: 1; width: 22px; border-radius: 999px; }
+  @media (max-width: 700px) {
+    #dots { bottom: 84px; max-width: 75vw; padding: 6px 10px; }
+    .dot { width: 6px; height: 6px; }
+    .dot.active { width: 18px; }
+  }
+
+  #help {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,.6);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 200; padding: 2rem;
+  }
+  #help.show { display: flex; }
+  #help .box {
+    max-width: 440px; width: 100%;
+    background: #fff; border-radius: 20px; padding: 2rem;
+    box-shadow: 0 30px 60px -20px rgba(15,23,42,.4);
+    animation: pop .4s var(--ease-out);
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(.94) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  #help h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem; }
+  #help ul { list-style: none; }
+  #help ul li { padding: .65rem 0; color: var(--ink-soft); font-size: .92rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line-soft); }
+  #help ul li:last-child { border-bottom: none; }
+  #help kbd { background: var(--bg-soft); border: 1px solid var(--line); padding: 3px 10px; border-radius: 6px; font-size: .8rem; font-family: 'JetBrains Mono', monospace; color: var(--ink); font-weight: 500; }
+
+  .topbar { position: fixed; top: 20px; left: 24px; display: flex; align-items: center; gap: 10px; font-size: .78rem; color: var(--ink-mute); z-index: 40; letter-spacing: .02em; }
+  .topbar .brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 0 4px var(--blue-soft); }
+  .topbar strong { color: var(--ink); font-weight: 600; }
+  #counter { position: fixed; top: 20px; right: 24px; color: var(--ink-mute); font-size: .78rem; font-variant-numeric: tabular-nums; z-index: 40; letter-spacing: .04em; font-weight: 500; }
+
+  /* ============ GAMIFICATION ============ */
+  #hud {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: .8rem;
+    background: rgba(255,255,255,.9);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px 6px 10px; z-index: 60;
+    box-shadow: 0 4px 16px rgba(15,23,42,.06);
+    transition: all .4s var(--ease-out);
+  }
+  @media (max-width: 800px) { #hud { top: 56px; transform: translateX(-50%) scale(.9); } }
+  @media (max-width: 500px) { #hud { transform: translateX(-50%) scale(.8); } }
+  #hud .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: .85rem;
+    box-shadow: 0 4px 12px -2px rgba(37,99,235,.4);
+  }
+  #hud .stats { display: flex; gap: .9rem; align-items: center; }
+  #hud .stat-hud { display: flex; align-items: center; gap: .35rem; font-size: .82rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  #hud .stat-hud .ic { font-size: .95rem; }
+  #hud .stat-hud .pulse { animation: statPulse .5s var(--ease-out); }
+  @keyframes statPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); color: var(--amber); }
+    100% { transform: scale(1); }
+  }
+  #hud .badges-mini { display: flex; gap: 4px; margin-left: .3rem; padding-left: .8rem; border-left: 1px solid var(--line); }
+  #hud .badge-mini {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem; background: var(--bg-soft); border: 1px solid var(--line);
+    transition: all .4s var(--ease-out); opacity: .3; filter: grayscale(1);
+  }
+  #hud .badge-mini.earned {
+    opacity: 1; filter: grayscale(0);
+    background: linear-gradient(135deg, #fef3c7, #fbbf24);
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(251,191,36,.2);
+    animation: badgePop .6s var(--ease-out);
+  }
+  @keyframes badgePop {
+    0% { transform: scale(.5) rotate(-15deg); }
+    60% { transform: scale(1.2) rotate(8deg); }
+    100% { transform: scale(1) rotate(0); }
+  }
+
+  /* Floating points animation */
+  .float-points {
+    position: fixed; pointer-events: none; z-index: 300;
+    font-weight: 800; font-size: 1.4rem; color: var(--amber);
+    text-shadow: 0 2px 8px rgba(217,119,6,.3);
+    animation: floatUp 1.4s var(--ease-out) forwards;
+  }
+  @keyframes floatUp {
+    0% { opacity: 0; transform: translateY(0) scale(.6); }
+    20% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-90px) scale(1); }
+  }
+
+  /* Quiz */
+  .quiz {
+    background: linear-gradient(135deg, #f5f3ff 0%, #fff 60%);
+    border: 1px solid #ddd6fe;
+    border-radius: 16px;
+    padding: 1.3rem 1.5rem;
+    margin-top: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .quiz::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--violet), var(--pink));
+  }
+  .quiz .q-label {
+    font-size: .72rem; font-weight: 700; letter-spacing: .12em;
+    color: var(--violet); text-transform: uppercase;
+    display: flex; align-items: center; gap: .5rem; margin-bottom: .6rem;
+  }
+  .quiz .q-label .reward {
+    background: var(--amber-soft); color: var(--amber);
+    padding: 2px 8px; border-radius: 999px;
+    font-size: .68rem; letter-spacing: .06em;
+  }
+  .quiz .q-text {
+    font-size: 1rem; font-weight: 600; color: var(--ink);
+    margin-bottom: 1rem; line-height: 1.4;
+  }
+  .quiz .options { display: grid; gap: .55rem; }
+  .quiz .option {
+    background: #fff; border: 1.5px solid var(--line);
+    padding: .8rem 1rem; border-radius: 10px;
+    font-size: .9rem; color: var(--ink-soft);
+    cursor: pointer; font-family: inherit; text-align: left;
+    transition: all .25s var(--ease-out);
+    display: flex; align-items: center; gap: .7rem;
+    width: 100%;
+  }
+  .quiz .option:hover:not(:disabled) {
+    border-color: var(--violet); color: var(--ink);
+    transform: translateX(4px);
+    background: #faf5ff;
+  }
+  .quiz .option .marker {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--bg-soft); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; color: var(--ink-mute);
+    flex-shrink: 0; transition: all .3s var(--ease-out);
+  }
+  .quiz .option.correct {
+    border-color: var(--green); background: var(--green-soft); color: var(--green);
+    font-weight: 600;
+  }
+  .quiz .option.correct .marker { background: var(--green); color: #fff; border-color: var(--green); }
+  .quiz .option.wrong {
+    border-color: var(--red); background: var(--red-soft); color: var(--red);
+    animation: shake .4s var(--ease-out);
+  }
+  .quiz .option.wrong .marker { background: var(--red); color: #fff; border-color: var(--red); }
+  .quiz .option:disabled { cursor: not-allowed; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .quiz .feedback {
+    margin-top: .9rem; font-size: .88rem; font-weight: 500;
+    display: none; padding: .7rem 1rem; border-radius: 10px;
+  }
+  .quiz .feedback.show { display: block; animation: rise .4s var(--ease-out); }
+  .quiz .feedback.ok { background: var(--green-soft); color: var(--green); border-left: 3px solid var(--green); }
+  .quiz .feedback.no { background: var(--red-soft); color: var(--red); border-left: 3px solid var(--red); }
+  .quiz.solved { background: linear-gradient(135deg, #ecfdf5 0%, #fff 60%); border-color: #a7f3d0; }
+  .quiz.solved::before { background: linear-gradient(180deg, var(--green), var(--blue)); }
+  .quiz.solved .q-label { color: var(--green); }
+  .quiz.solved .q-label::after {
+    content: '✓ Terjawab'; background: var(--green-soft); color: var(--green);
+    padding: 2px 8px; border-radius: 999px; font-size: .68rem;
+    margin-left: .3rem;
+  }
+
+  /* Badge award toast */
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(40px);
+    background: #fff; border: 1px solid var(--line);
+    padding: .9rem 1.3rem; border-radius: 14px;
+    box-shadow: 0 20px 48px -16px rgba(15,23,42,.3);
+    display: flex; align-items: center; gap: .9rem;
+    z-index: 250; opacity: 0; pointer-events: none;
+    transition: all .5s var(--ease-out);
+    max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast .badge-big {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 6px 18px -4px rgba(245,158,11,.5);
+    animation: badgePop .8s var(--ease-out);
+  }
+  .toast .toast-text { display: flex; flex-direction: column; }
+  .toast .toast-text strong { font-size: .92rem; color: var(--ink); font-weight: 700; }
+  .toast .toast-text span { font-size: .8rem; color: var(--ink-soft); }
+
+  /* Confetti */
+  .confetti {
+    position: fixed; width: 10px; height: 10px;
+    z-index: 300; pointer-events: none;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10vh) rotate(0); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Illustration SVG wrapper */
+  .illus {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--bg-soft) 0%, #fff 100%);
+    border: 1px solid var(--line); border-radius: 16px;
+    padding: 1rem; min-height: 140px;
+    transition: transform .4s var(--ease-out);
+  }
+  .illus:hover { transform: scale(1.02); }
+  .illus svg { width: 100%; height: auto; max-height: 220px; }
+  .illus-lg svg { max-height: 280px; }
+
+  /* Hero illustration */
+  .hero-illus {
+    display: flex; justify-content: center; margin-top: 1.5rem;
+  }
+  .hero-illus svg { width: 100%; max-width: 640px; height: auto; }
+
+  /* Progress ring on last slide */
+  .finish-ring {
+    width: 160px; height: 160px; margin: 1rem auto;
+    position: relative;
+  }
+  .finish-ring svg { transform: rotate(-90deg); }
+  .finish-ring .ring-bg { stroke: var(--line); }
+  .finish-ring .ring-fg { stroke: url(#gradFinish); stroke-linecap: round; transition: stroke-dashoffset 1.5s var(--ease-out); }
+  .finish-ring .ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .finish-ring .ring-text .pct { font-size: 2rem; font-weight: 800; color: var(--ink); letter-spacing: -0.03em; }
+  .finish-ring .ring-text .lbl { font-size: .75rem; color: var(--ink-mute); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; }
+
+  /* Sparkle on hover card */
+  .card.sparkle { position: relative; overflow: hidden; }
+  .card.sparkle::after {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,.8), transparent);
+    transition: left .8s var(--ease-out);
+  }
+  .card.sparkle:hover::after { left: 120%; }
+
+  /* Hint chip */
+  .hint-chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    font-size: .74rem; font-weight: 600;
+    color: var(--violet); background: var(--violet-soft);
+    padding: .35rem .8rem; border-radius: 999px;
+    margin-bottom: .6rem; letter-spacing: .04em;
+  }
+  .hint-chip::before { content: '🎮'; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <linearGradient id="gradFinish" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="50%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="gradAmber" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="gradGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="gradViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="gradPink" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div id="ambiance">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+</div>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <span class="brand-dot"></span>
+  <span><strong>Digital Business Ecosystem</strong> · Accounting Teacher</span>
+</div>
+<div id="counter">01 / 40</div>
+
+<div id="hud">
+  <div class="avatar">AK</div>
+  <div class="stats">
+    <div class="stat-hud"><span class="ic">⭐</span><span id="hudPoints">0</span> pts</div>
+    <div class="stat-hud"><span class="ic">🎯</span><span id="hudQuizzes">0</span>/3</div>
+  </div>
+  <div class="badges-mini" id="badgesMini">
+    <div class="badge-mini" data-badge="explorer" title="Penjelajah — Buka 10 slide">🧭</div>
+    <div class="badge-mini" data-badge="quizmaster" title="Quizmaster — Jawab 3 kuis dengan benar">🎓</div>
+    <div class="badge-mini" data-badge="finisher" title="Finisher — Selesaikan semua slide">🏆</div>
+  </div>
+</div>
+
+<div id="deck">
+
+  <!-- 1 · HERO -->
+  <section class="slide active">
+    <div class="pill">Digital Business Ecosystem</div>
+    <h1 class="hero-title">Mengubah Ruang Kelas<br>Menjadi <span class="grad">Ruang Kontrol</span><br>Industri Digital</h1>
+    <p class="lead">Dari akuntansi konvensional, menuju akuntansi bisnis digital — dengan AI sebagai penjaga pacing pembelajaran.</p>
+    <div class="hero-illus">
+      <svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="heroBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#eff6ff"/>
+            <stop offset="100%" stop-color="#fdf4ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="20" y="30" width="600" height="220" rx="24" fill="url(#heroBg)" stroke="#e2e8f0"/>
+        <!-- Teacher / presenter -->
+        <circle cx="150" cy="130" r="28" fill="url(#gradBlue)"/>
+        <path d="M 122 158 Q 150 200 178 158 L 178 200 L 122 200 Z" fill="#1e40af" opacity=".85"/>
+        <!-- Board with charts -->
+        <rect x="230" y="70" width="340" height="160" rx="12" fill="#fff" stroke="#cbd5e1"/>
+        <line x1="250" y1="110" x2="540" y2="110" stroke="#e2e8f0"/>
+        <!-- Bars -->
+        <rect x="260" y="160" width="22" height="50" rx="3" fill="url(#gradBlue)"/>
+        <rect x="292" y="140" width="22" height="70" rx="3" fill="url(#gradBlue)"/>
+        <rect x="324" y="120" width="22" height="90" rx="3" fill="url(#gradViolet)"/>
+        <rect x="356" y="150" width="22" height="60" rx="3" fill="url(#gradBlue)"/>
+        <rect x="388" y="130" width="22" height="80" rx="3" fill="url(#gradAmber)"/>
+        <rect x="420" y="105" width="22" height="105" rx="3" fill="url(#gradGreen)"/>
+        <!-- Line chart overlay -->
+        <path d="M 260 150 L 300 130 L 340 140 L 380 115 L 420 100 L 460 90 L 500 80"
+              fill="none" stroke="#d97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="500" cy="80" r="5" fill="#d97706"/>
+        <!-- Floating badges -->
+        <g transform="translate(60,60)">
+          <circle r="18" fill="url(#gradAmber)"/>
+          <text y="6" text-anchor="middle" font-size="16" fill="#fff">Rp</text>
+        </g>
+        <g transform="translate(590,180)">
+          <circle r="18" fill="url(#gradGreen)"/>
+          <text y="6" text-anchor="middle" font-size="16" fill="#fff">✓</text>
+        </g>
+        <g transform="translate(590,90)">
+          <circle r="18" fill="url(#gradViolet)"/>
+          <text y="6" text-anchor="middle" font-size="16" fill="#fff">AI</text>
+        </g>
+      </svg>
+    </div>
+    <div class="divider"></div>
+    <p style="font-size: .9rem;">Oleh <strong>Firhan Fahamzha</strong> · Untuk Guru Akuntansi SMK</p>
+  </section>
+  <!-- 2 · PERKENALAN PEMATERI -->
+  <section class="slide">
+    <h3 class="kicker">Perkenalan · Pemateri</h3>
+    <h1 class="hero-title" style="font-size: clamp(1.8rem, 3.6vw, 2.8rem); margin-bottom: .3rem;">
+      Firhan <span class="grad">Fahamzha</span>
+    </h1>
+    <div style="display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.2rem;">
+      <span class="pill" style="margin: 0;">Accounting Professional</span>
+      <span class="pill" style="margin: 0; background: var(--amber-soft); color: var(--amber);">Auditor</span>
+      <span class="pill" style="margin: 0; background: var(--green-soft); color: var(--green);">Trainer</span>
+      <span class="pill" style="margin: 0; background: var(--violet-soft); color: var(--violet);">Content Creator</span>
+    </div>
+
+    <div class="card tint-blue" style="padding: 1.1rem 1.3rem;">
+      <div style="display: flex; align-items: center; gap: .6rem; margin-bottom: .4rem;">
+        <span style="font-size: .72rem; font-weight: 700; letter-spacing: .1em; color: var(--blue); text-transform: uppercase;">Summary</span>
+        <span style="flex: 1; height: 1px; background: var(--blue-soft);"></span>
+      </div>
+      <p style="font-size: .88rem; line-height: 1.55; color: var(--ink-soft);">A highly analytical Accounting professional with 3 years of experience in financial training and audit fieldwork. Currently pursuing a Bachelor's degree in Accounting with an exceptional GPA of <strong>3.94/4.00</strong>, building deep expertise across corporate accounting, financial management, taxation (PPN &amp; PPh), and auditing. Proven ability to manage financial records, execute inventory verification in public accounting firm engagements, and evaluate COSO internal control frameworks. Equipped with Intermediate English (B1) and strong analytical thinking, ready to ensure financial integrity, procedural compliance, and operational efficiency.</p>
+    </div>
+
+    <div class="tabs" style="margin-top: 1.2rem; flex-wrap: wrap;">
+      <button class="tab active" onclick="showTab(event, 'introWork')">💼 Work</button>
+      <button class="tab" onclick="showTab(event, 'introOrg')">🏛 Organization</button>
+      <button class="tab" onclick="showTab(event, 'introEdu')">🎓 Education</button>
+      <button class="tab" onclick="showTab(event, 'introAwards')">🏆 Awards</button>
+      <button class="tab" onclick="showTab(event, 'introSkills')">⚡ Skills</button>
+    </div>
+
+    <!-- WORK -->
+    <div id="introWork" class="tab-content active" style="max-height: 42vh; overflow-y: auto; padding-right: .5rem;">
+      <div class="grid g-2" style="margin-top: 0; gap: .8rem;">
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Financial Accounting Assessor</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2023 – Now</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">PT Cipta Sarana Cendekia · East Java</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Served as an official Assessor for the Vocational High School (SMK) Competency Certification Exams (UKK) across East Java, evaluating and certifying students' technical mastery in accounting. Conducted rigorous assessments based on the latest Financial Accounting Standards, specifically focusing on SAK ETAP and SAK EP compliance frameworks. Ensured testing procedures aligned with national competency standards, providing structured feedback and objective evaluation reports for academic institutions.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Accounting &amp; Tax Trainer</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2024 – Now</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">PT Cipta Sarana Cendekia</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Managed and delivered comprehensive, practice-based training sessions covering the full accounting cycle, Value Added Tax (PPN), and Income Tax (PPh) to over 100 vocational students per class. Instructed specialized training programs for teacher internships and other corporate initiatives, focusing on the practical integration of AI for Accounting and AI for Education. Designed and structured practical accounting learning models to simplify complex technical regulations and financial concepts into highly applicable methodologies.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Creative &amp; Digital Marketing Specialist</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2023 – Now</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">PT Cipta Sarana Cendekia</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Spearheaded the creative division's digital initiatives by designing educational carousel content and producing engaging Instagram Reels focused on financial and tax literacy. Acted as the main Host for the company's YouTube program, communicating and discussing complex, trending accounting and taxation topics for a wider audience.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Guest Speaker — Career &amp; Internship Workshop</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">May 2026</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">Universitas Brawijaya</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Authored and compiled a comprehensive, practical training module titled "Excel for Tax" specifically designed for undergraduate Taxation students at Universitas Brawijaya to bridge academic theory with corporate needs. Delivered an intensive seminar and practical workshop to Universitas Brawijaya students, demonstrating advanced Excel functions, data-driven tax computations, and automated financial reporting for career and internship preparation.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Project Lead — Financial Transformation Seminar</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">Nov 2024</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">PT Cipta Sarana Cendekia</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Analyzed internal control systems and led the conceptual design of Robotic Process Automation (RPA) frameworks to streamline and modernize traditional accounting workflows. Developed comprehensive transparency and accountability frameworks used as standard tools for business process evaluation and internal control adjustments. Synthesized technical financial concepts and operational controls into strategic presentation materials aligned with rigorous external audit perspectives and compliance standards.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Educational Gamification Developer</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2023</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">PT Cipta Sarana Cendekia</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Developed a comprehensive accounting and taxation question bank and educational storyboards to support gamified learning models, increasing engagement and data retention among students.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem; grid-column: 1 / -1;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">External Auditor (Project-Based)</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2024 – Now</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">MNK &amp; Partners Public Accounting Firm · Malang City</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Executed field audit procedures on a project-by-project basis, specializing in rigorous physical inventory verification and asset validation across client sites. Verified physical inventory counts against accounting records to ensure strict compliance with applicable auditing standards, Financial Accounting Standards (SAK EP), and IFRS. Documented detailed testing results and performed variance analysis on inventory discrepancies to support the accuracy and integrity of comprehensive audit working papers.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ORGANIZATION -->
+    <div id="introOrg" class="tab-content" style="max-height: 42vh; overflow-y: auto; padding-right: .5rem;">
+      <div class="grid g-1" style="margin-top: 0; gap: .8rem;">
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Team Captain &amp; Coordinator — Accounting Olympiad Team</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2024 – Now</span>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">Asia Institute of Technology &amp; Business Malang · Malang City</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Formed, coordinated, and mentored the Accounting Department's competitive teams, driving strategic preparation for high-tier national accounting competitions. Directed intensive technical training and guided the team through complex financial accounting, taxation, and auditing case studies, successfully leading them to national finals. Structured the team's long-term development roadmap, synchronized schedules, and aligned academic resources with competition milestones to maintain a high-performance culture.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Team Captain — National Accounting Olympiad Team</h4>
+          </div>
+          <p style="font-size: .78rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .5rem;">Widya Dharma Vocational High School Turen</p>
+          <p style="font-size: .82rem; line-height: 1.5;">Actively scouted, analyzed, and mapped upcoming national-level accounting competitions to strategically position the school's top talent. Formulated comprehensive project budgets and performed detailed cost-benefit analyses to justify competition expenses and maximize resource allocation. Managed the recruitment and selection process to determine the qualified student representatives for competitions, leading the team to secure multiple prestigious titles.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Project Coordinator — The Daviat of Gandrung</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2022</span>
+          </div>
+          <p style="font-size: .82rem; line-height: 1.5; margin-top: .4rem;">Commanded and coordinated a massive team of over 50 personnel, streamlining communication channels between internal committees and external stakeholders to ensure flawless execution. Devised and structured the overall budget proposal (RAB) to meticulously monitor and align project requirements with available financial resources. Managed end-to-end vendor relations, including contract review, price negotiation, and disbursement tracking to ensure timely payments and strict budget compliance.</p>
+        </div>
+
+        <div class="card" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .4rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: .92rem;">Deputy Treasurer of Class Representative Council (MPK)</h4>
+            <span style="font-size: .7rem; color: var(--ink-mute); font-weight: 600;">2021 – 2022</span>
+          </div>
+          <p style="font-size: .82rem; line-height: 1.5; margin-top: .4rem;">Served as a primary financial auditor and supervisory body for the Student Government (OSIS) budget, ensuring all expenditures aligned with approved work plans. Implemented strict internal control checks on financial reporting to eliminate budget discrepancies and prevent any form of financial mismanagement or embezzlement. Managed and documented cash inflows and outflows, ensuring high accuracy and transparency in the organization's financial ledgers.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div id="introEdu" class="tab-content" style="max-height: 42vh; overflow-y: auto; padding-right: .5rem;">
+      <div class="grid g-1" style="margin-top: 0; gap: .8rem;">
+
+        <div class="card tint-blue" style="padding: 1.1rem 1.3rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: 1rem;">Bachelor of Accounting</h4>
+            <span style="font-size: .8rem; font-weight: 700; color: var(--blue);">GPA 3,94 / 4,00</span>
+          </div>
+          <p style="font-size: .82rem; color: var(--blue); font-weight: 600; margin: .25rem 0 .6rem;">Asia Institute of Technology &amp; Business Malang · Malang City · 2024 – Now</p>
+          <ul class="clean" style="margin-top: .3rem;">
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Conducted a comprehensive global market analysis for PT Wijaya Cahaya Timber Tbk, mapping the end-to-end export workflow, international trade administration (L/C, B/L, PEB), and regulatory compliance for global distribution.</li>
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Developed an innovative food fusion business venture; authored the comprehensive business proposal, conducted market projections, formulated financial budgets, and managed real-time bookkeeping.</li>
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Successfully secured corporate sponsors as tenants, launched targeted customer acquisition strategies, and drove high retention through interactive event activities, resulting in maximum tenant engagement.</li>
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Authored an academic proposal evaluating the implementation of the 5 COSO Internal Control Framework components to measure operational integrity and analyzed fraud mitigation using the Fraud Diamond Theory.</li>
+          </ul>
+        </div>
+
+        <div class="card tint-green" style="padding: 1.1rem 1.3rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; flex-wrap: wrap;">
+            <h4 style="margin: 0; font-size: 1rem;">Institutional Accounting &amp; Finance</h4>
+            <span style="font-size: .8rem; font-weight: 700; color: var(--green);">GPA 3,47 / 4,00</span>
+          </div>
+          <p style="font-size: .82rem; color: var(--green); font-weight: 600; margin: .25rem 0 .6rem;">Widya Dharma Vocational High School Turen · Malang · 2020 – 2023</p>
+          <ul class="clean" style="margin-top: .3rem;">
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Gained hands-on operational experience by serving as a Customer Service Representative and Teller, directly managing cash deposits, withdrawals, and financial services for the school's internal community.</li>
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Selected as the keynote speaker for the school's weekly spiritual assemblies (Kultum), delivering presentations to the entire student body and faculty.</li>
+            <li style="font-size: .84rem; padding: .5rem 0 .5rem 1.8rem;">Recognized as the Best Participant in the Capital Market Seminar organized internally by UMM Accounting department students.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AWARDS -->
+    <div id="introAwards" class="tab-content" style="max-height: 42vh; overflow-y: auto; padding-right: .5rem;">
+      <div class="grid g-2" style="margin-top: 0; gap: .8rem;">
+
+        <div class="card tint-amber" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; gap: .6rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; flex-shrink: 0;">🥇</div>
+            <div>
+              <h4 style="margin: 0; font-size: .9rem;">1st Winner</h4>
+              <p style="font-size: .82rem; line-height: 1.4; margin-top: .25rem;">Malang Raya Accounting Olympiad, Universitas Merdeka Malang. <span style="color: var(--ink-mute); font-weight: 600;">(2022)</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tint-amber" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; gap: .6rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; flex-shrink: 0;">🥈</div>
+            <div>
+              <h4 style="margin: 0; font-size: .9rem;">2nd Winner</h4>
+              <p style="font-size: .82rem; line-height: 1.4; margin-top: .25rem;">East Java &amp; Bali Regional Accounting Olympiad, Institut Teknologi &amp; Bisnis Asia Malang. <span style="color: var(--ink-mute); font-weight: 600;">(2023)</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tint-amber" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; gap: .6rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; flex-shrink: 0;">🥈</div>
+            <div>
+              <h4 style="margin: 0; font-size: .9rem;">2nd Winner</h4>
+              <p style="font-size: .82rem; line-height: 1.4; margin-top: .25rem;">Malang Regency Accounting Student Competency Competition (LKS). <span style="color: var(--ink-mute); font-weight: 600;">(2023)</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tint-violet" style="padding: 1rem 1.1rem;">
+          <div style="display: flex; gap: .6rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; flex-shrink: 0;">🎖</div>
+            <div>
+              <h4 style="margin: 0; font-size: .9rem;">Regency Representative</h4>
+              <p style="font-size: .82rem; line-height: 1.4; margin-top: .25rem;">Selected to represent Malang Regency in the East Java Provincial Accounting Student Competency Competition (LKS). <span style="color: var(--ink-mute); font-weight: 600;">(2023)</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card tint-green" style="padding: 1rem 1.1rem; grid-column: 1 / -1;">
+          <div style="display: flex; gap: .6rem; align-items: flex-start;">
+            <div style="font-size: 1.5rem; flex-shrink: 0;">🎓</div>
+            <div>
+              <h4 style="margin: 0; font-size: .9rem;">Academic Excellence Award</h4>
+              <p style="font-size: .82rem; line-height: 1.4; margin-top: .25rem;">Best Graduate of the Institutional Accounting &amp; Finance Department, SMK Widya Dharma Turen. <span style="color: var(--ink-mute); font-weight: 600;">(2023)</span></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div id="introSkills" class="tab-content" style="max-height: 42vh; overflow-y: auto; padding-right: .5rem;">
+      <div class="grid g-2" style="margin-top: 0; gap: .8rem;">
+
+        <div class="card tint-blue" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem;" class="accent">Financial &amp; Accounting Core</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Financial Accounting, Corporate Bookkeeping, Indonesian Tax Regulations (PPN &amp; PPh), Financial Statement Preparation, SAK ETAP, SAK EP, and IFRS Frameworks.</p>
+        </div>
+
+        <div class="card tint-blue" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem;" class="accent">Audit, Risk, &amp; Internal Control</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Inventory Audit &amp; Physical Validation (Stock Opname), Audit Working Papers (KKA) Documentation, COSO Internal Control Framework Evaluation, Fraud Risk Mitigation (Fraud Diamond Theory), and Procedural Compliance.</p>
+        </div>
+
+        <div class="card tint-violet" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem; color: var(--violet);">Systems, Technology, &amp; AI</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Microsoft Office (Advanced Excel for Tax, PowerPoint), Basic Accurate Online, AI for Accounting, Conceptual Robotic Process Automation (RPA), and Business Process Flowcharting &amp; Documentation, and Accounting software (MYOB V.18, Basic Accurate &amp; Zahir).</p>
+        </div>
+
+        <div class="card tint-violet" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem; color: var(--violet);">Instructional Design &amp; Assessment</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Vocational Competency Assessment (UKK), Practice-Based Curriculum Development, Educational Gamification, Storyboarding, and Instructional Design.</p>
+        </div>
+
+        <div class="card tint-amber" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem;" class="amber">Interpersonal, Creative, &amp; Leadership</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Public Speaking &amp; Presenting, Strategic Leadership, Team Mentoring, Video Production (YouTube Program Hosting &amp; Instagram Reels), Analytical Thinking, and Professional Ethics.</p>
+        </div>
+
+        <div class="card tint-green" style="padding: 1rem 1.1rem;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem;" class="green">Languages</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Indonesian (Native), English (B1 – Intermediate).</p>
+        </div>
+
+        <div class="card tint-pink" style="padding: 1rem 1.1rem; grid-column: 1 / -1;">
+          <h4 style="margin: 0 0 .4rem; font-size: .88rem; color: var(--pink);">Interests</h4>
+          <p style="font-size: .82rem; line-height: 1.5;">Audit &amp; Assurance, Corporate Taxation, Digital Transformation &amp; AI in Accounting, Capital Markets, and Practice-Based Financial Education.</p>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+  <!-- 2 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 1 · Realitas Baru</h3>
+    <h2>Ekonomi Digital Indonesia</h2>
+    <div class="grid g-3">
+      <div class="stat">
+        <div class="value">Rp1.672<span style="font-size: 1rem; color: var(--ink-mute);"> T</span></div>
+        <div class="label">Total nilai ekonomi digital<br>(≈ USD 100 miliar)</div>
+      </div>
+      <div class="stat">
+        <div class="value accent">72%</div>
+        <div class="label">Kontribusi e-commerce<br>terhadap total nilai ekonomi</div>
+      </div>
+      <div class="stat">
+        <div class="value green">USD 13,1<span style="font-size: 1rem; color: var(--ink-mute);"> M</span></div>
+        <div class="label">GMV TikTok Shop,<br>terbesar ke-2 di dunia</div>
+      </div>
+    </div>
+    <div class="illus" style="margin-top: 1.4rem;">
+      <svg viewBox="0 0 520 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Indonesia map silhouette simple -->
+        <path d="M 30 60 Q 60 45 90 55 Q 120 40 150 52 Q 180 42 210 55 Q 240 48 270 58 Q 300 50 330 60 Q 360 55 390 62 Q 420 55 450 65 Q 480 60 500 68"
+              fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="90" cy="55" r="4" fill="#2563eb"/>
+        <circle cx="210" cy="55" r="4" fill="#d97706"/>
+        <circle cx="330" cy="60" r="4" fill="#7c3aed"/>
+        <circle cx="450" cy="65" r="4" fill="#059669"/>
+        <!-- Pulse rings -->
+        <circle cx="210" cy="55" r="10" fill="none" stroke="#d97706" stroke-width="1.5" opacity=".4">
+          <animate attributeName="r" values="6;16;6" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values=".6;0;.6" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <text x="260" y="100" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="Inter">Pertumbuhan ekonomi digital merata di seluruh Indonesia</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 1 · Realitas Baru</h3>
+    <h2>Revolusi Transaksi Non-Tunai</h2>
+    <div class="grid g-2">
+      <div>
+        <div class="stat" style="margin-bottom: 1rem;">
+          <div class="value">15,51<span style="font-size: 1rem; color: var(--ink-mute);"> M</span></div>
+          <div class="label">Total transaksi QRIS</div>
+        </div>
+        <div class="stat" style="margin-bottom: 1rem;">
+          <div class="value green">Rp1.420<span style="font-size: 1rem; color: var(--ink-mute);"> T</span></div>
+          <div class="label">Total nilai transaksi</div>
+        </div>
+        <div class="stat">
+          <div class="value amber">+148%</div>
+          <div class="label">Pertumbuhan YoY</div>
+        </div>
+      </div>
+      <div class="illus">
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+          <!-- Phone -->
+          <rect x="60" y="20" width="180" height="260" rx="24" fill="#0f172a"/>
+          <rect x="70" y="35" width="160" height="230" rx="16" fill="#fff"/>
+          <rect x="120" y="28" width="60" height="4" rx="2" fill="#334155"/>
+          <!-- QR -->
+          <g transform="translate(90,80)">
+            <rect width="120" height="120" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+            <g fill="#0f172a">
+              <rect x="10" y="10" width="30" height="30" rx="4"/>
+              <rect x="80" y="10" width="30" height="30" rx="4"/>
+              <rect x="10" y="80" width="30" height="30" rx="4"/>
+              <rect x="18" y="18" width="14" height="14" fill="#fff"/>
+              <rect x="88" y="18" width="14" height="14" fill="#fff"/>
+              <rect x="18" y="88" width="14" height="14" fill="#fff"/>
+              <rect x="50" y="20" width="6" height="6"/>
+              <rect x="62" y="30" width="6" height="6"/>
+              <rect x="50" y="42" width="6" height="6"/>
+              <rect x="62" y="55" width="6" height="6"/>
+              <rect x="20" y="55" width="6" height="6"/>
+              <rect x="35" y="65" width="6" height="6"/>
+              <rect x="50" y="70" width="6" height="6"/>
+              <rect x="80" y="55" width="6" height="6"/>
+              <rect x="92" y="65" width="6" height="6"/>
+              <rect x="80" y="80" width="6" height="6"/>
+              <rect x="95" y="95" width="6" height="6"/>
+              <rect x="60" y="95" width="6" height="6"/>
+            </g>
+          </g>
+          <!-- Scan line -->
+          <rect x="90" y="140" width="120" height="3" fill="#3b82f6" opacity=".8">
+            <animate attributeName="y" values="80;200;80" dur="3s" repeatCount="indefinite"/>
+          </rect>
+          <text x="150" y="240" text-anchor="middle" font-size="13" fill="#0f172a" font-family="Inter" font-weight="700">Scan &amp; Bayar</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 1 · Realitas Baru</h3>
+    <h2>Kesenjangan Kompetensi</h2>
+    <div class="compare">
+      <div class="old">
+        <h4 class="red">Teori Kelas Analog</h4>
+        <ul>
+          <li>Jual barang</li>
+          <li>Terima uang tunai</li>
+          <li>Catat nota kertas</li>
+          <li>Siklus linear, sederhana</li>
+        </ul>
+        <p style="margin-top: 1rem; font-size: .88rem;">Peran lulusan: <strong class="red">Pencatat Mekanis (Clerk)</strong></p>
+      </div>
+      <div class="new">
+        <h4 class="green">Realitas Industri Digital</h4>
+        <ul>
+          <li>Uang tertahan di aplikasi (escrow)</li>
+          <li>Dipotong biaya platform otomatis</li>
+          <li>Rekonsiliasi dari data mentah CSV</li>
+          <li>Siklus kompleks, real-time</li>
+        </ul>
+        <p style="margin-top: 1rem; font-size: .88rem;">Peran lulusan: <strong class="green">Analis Data Keuangan (Analyst)</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 1 · Realitas Baru</h3>
+    <h2>Tiga Tantangan Pembelajaran</h2>
+    <div class="grid g-3">
+      <div class="card tint-amber sparkle">
+        <div class="num">01</div>
+        <h4>Transformasi Dokumen Sumber</h4>
+        <p>Wujud bukti transaksi berubah dari nota fisik menjadi data digital mentah yang memerlukan ekstraksi.</p>
+      </div>
+      <div class="card tint-amber sparkle">
+        <div class="num">02</div>
+        <h4>Aliran Dana Tertunda</h4>
+        <p>Uang penjualan tidak instan diterima; dana mengendap di entitas perantara atau akun pihak ketiga (escrow).</p>
+      </div>
+      <div class="card tint-amber sparkle">
+        <div class="num">03</div>
+        <h4>Tumpang Tindih Pencatatan</h4>
+        <p>Kompleksitas tinggi dalam pengakuan pendapatan, HPP, dan pajak akibat subsidi dan voucher platform.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Ekosistem Digital</h3>
+    <h2>Glosarium: Bahasa Mesin Baru</h2>
+    <div class="grid g-3">
+      <div class="card"><h4 class="accent">Merchant</h4><p>Penjual / pemilik barang</p></div>
+      <div class="card"><h4 class="accent">Marketplace</h4><p>Pasar digital / platform perantara</p></div>
+      <div class="card"><h4 class="accent">Payment Gateway</h4><p>Infrastruktur jalur pembayaran</p></div>
+      <div class="card"><h4 class="accent">Escrow Account</h4><p>Rekening penampung sementara (keamanan)</p></div>
+      <div class="card"><h4 class="accent">Settlement</h4><p>Pencairan dana akhir ke bank penjual</p></div>
+      <div class="card"><h4 class="accent">MDR</h4><p>Merchant Discount Rate: potongan biaya layanan transaksi</p></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Ekosistem Digital</h3>
+    <h2>Pemetaan Aktor Utama</h2>
+    <div class="illus illus-lg">
+      <svg viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+        <!-- Center platform -->
+        <circle cx="250" cy="160" r="55" fill="url(#gradBlue)" opacity=".15"/>
+        <circle cx="250" cy="160" r="42" fill="url(#gradBlue)"/>
+        <text x="250" y="156" text-anchor="middle" font-size="12" font-weight="700" fill="#fff" font-family="Inter">PLATFORM</text>
+        <text x="250" y="172" text-anchor="middle" font-size="9" fill="#dbeafe" font-family="Inter">E-commerce</text>
+
+        <!-- Regulator top -->
+        <circle cx="250" cy="40" r="30" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+        <text x="250" y="46" text-anchor="middle" font-size="16">🏛</text>
+        <text x="250" y="88" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Regulator</text>
+
+        <!-- Consumer right -->
+        <circle cx="440" cy="160" r="30" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+        <text x="440" y="166" text-anchor="middle" font-size="16">🛒</text>
+        <text x="440" y="208" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Konsumen</text>
+
+        <!-- Logistics left -->
+        <circle cx="60" cy="160" r="30" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+        <text x="60" y="166" text-anchor="middle" font-size="16">🚚</text>
+        <text x="60" y="208" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Logistik</text>
+
+        <!-- Affiliator bottom -->
+        <circle cx="250" cy="280" r="30" fill="#fff" stroke="#e2e8f0" stroke-width="2"/>
+        <text x="250" y="286" text-anchor="middle" font-size="16">🎤</text>
+        <text x="250" y="320" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Afiliator</text>
+
+        <!-- Connections -->
+        <g stroke="#94a3b8" stroke-width="1.5" fill="none" stroke-dasharray="4 4">
+          <line x1="250" y1="70" x2="250" y2="118"/>
+          <line x1="250" y1="202" x2="250" y2="250"/>
+          <line x1="410" y1="160" x2="292" y2="160"/>
+          <line x1="90" y1="160" x2="208" y2="160"/>
+        </g>
+        <!-- Flow labels -->
+        <text x="360" y="152" text-anchor="middle" font-size="9" fill="#d97706" font-family="Inter" font-weight="600">💰 uang</text>
+        <text x="140" y="152" text-anchor="middle" font-size="9" fill="#2563eb" font-family="Inter" font-weight="600">📦 barang</text>
+        <text x="250" y="100" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="Inter" font-weight="600">📊 data</text>
+        <text x="250" y="238" text-anchor="middle" font-size="9" fill="#7c3aed" font-family="Inter" font-weight="600">🎬 konten</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Ekosistem Digital</h3>
+    <h2>Alur Transaksi Marketplace</h2>
+    <div class="illus">
+      <svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg">
+        <!-- 7 steps -->
+        <g font-family="Inter" font-size="9" fill="#475569" font-weight="600" text-anchor="middle">
+          <g transform="translate(50,70)">
+            <circle r="24" fill="#dbeafe"/><text y="5" font-size="20">🛒</text>
+            <text y="46">Checkout</text>
+          </g>
+          <g transform="translate(145,70)">
+            <circle r="24" fill="#fef3c7"/><text y="5" font-size="20">🔒</text>
+            <text y="46">Escrow</text>
+          </g>
+          <g transform="translate(240,70)">
+            <circle r="24" fill="#dbeafe"/><text y="5" font-size="20">📦</text>
+            <text y="46">Kirim</text>
+          </g>
+          <g transform="translate(335,70)">
+            <circle r="24" fill="#d1fae5"/><text y="5" font-size="20">✓</text>
+            <text y="46">Selesai</text>
+          </g>
+          <g transform="translate(430,70)">
+            <circle r="24" fill="#fee2e2"/><text y="5" font-size="20">✂</text>
+            <text y="46">Komisi</text>
+          </g>
+          <g transform="translate(525,70)">
+            <circle r="24" fill="#dbeafe"/><text y="5" font-size="20">💼</text>
+            <text y="46">Saldo</text>
+          </g>
+          <g transform="translate(610,70)">
+            <circle r="24" fill="#fef3c7"/><text y="5" font-size="20">🏦</text>
+            <text y="46">Settle</text>
+          </g>
+        </g>
+        <g stroke="#cbd5e1" stroke-width="2" fill="none" marker-end="url(#arrowSmall)">
+          <line x1="76" y1="70" x2="120" y2="70"/>
+          <line x1="171" y1="70" x2="215" y2="70"/>
+          <line x1="266" y1="70" x2="310" y2="70"/>
+          <line x1="361" y1="70" x2="405" y2="70"/>
+          <line x1="456" y1="70" x2="500" y2="70"/>
+          <line x1="551" y1="70" x2="585" y2="70"/>
+        </g>
+        <defs>
+          <marker id="arrowSmall" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#cbd5e1"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+    <div class="card tint-red" style="margin-top: 1.2rem;">
+      <p><strong class="red">Titik Kritis Akuntansi:</strong> Kebocoran Pendapatan (Revenue Leak) terjadi di langkah ke-5 — di sinilah pencatatan konvensional gagal.</p>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Ekosistem Digital</h3>
+    <h2>QRIS & Payment Gateway</h2>
+    <div class="flow">
+      <div class="step"><span class="n">1</span>Pemindaian QR</div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">2</span>Payment Gateway<br><span style="font-size: .76rem; color: var(--ink-mute);">Midtrans / Xendit</span></div>
+      <span class="arrow">→</span>
+      <div class="step" style="border-color: #fecaca;"><span class="n red">3</span>Potong MDR<br><span style="font-size: .76rem; color: var(--ink-mute);">maks. 0,7%</span></div>
+      <span class="arrow">→</span>
+      <div class="step" style="border-color: #a7f3d0;"><span class="n green">4</span>Settlement<br><span style="font-size: .76rem; color: var(--ink-mute);">H+1 / H+2</span></div>
+    </div>
+    <p style="margin-top: 1.6rem;">Rekening bank penjual menerima dana bersih setelah potongan MDR. Jurnal harus mencatat potongan ini sebagai beban.</p>
+
+    <!-- QUIZ 1 -->
+    <div class="quiz" data-quiz="q1" data-points="50">
+      <div class="q-label">🎯 Kuis Mini <span class="reward">+50 pts</span></div>
+      <div class="q-text">Dana penjualan tertahan di rekening penampung sebelum dicairkan. Rekening ini disebut apa?</div>
+      <div class="options">
+        <button class="option" data-correct="false"><span class="marker">A</span> Settlement Account</button>
+        <button class="option" data-correct="true"><span class="marker">B</span> Escrow Account</button>
+        <button class="option" data-correct="false"><span class="marker">C</span> Merchant Discount Rate</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Model Bisnis</h3>
+    <h2>Cloud Kitchen</h2>
+    <div class="grid g-2">
+      <div class="illus">
+        <svg viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg">
+          <!-- Building -->
+          <rect x="40" y="120" width="160" height="80" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="55" y="135" width="30" height="30" rx="4" fill="#dbeafe"/>
+          <rect x="105" y="135" width="30" height="30" rx="4" fill="#fef3c7"/>
+          <rect x="155" y="135" width="30" height="30" rx="4" fill="#d1fae5"/>
+          <text x="120" y="190" text-anchor="middle" font-size="9" fill="#64748b" font-family="Inter" font-weight="600">SATU DAPUR FISIK</text>
+          <!-- Brands above -->
+          <g font-family="Inter" font-size="8" fill="#475569" font-weight="600" text-anchor="middle">
+            <g transform="translate(55,60)"><circle r="18" fill="#fee2e2"/><text y="3" font-size="14">🍔</text><text y="32">A</text></g>
+            <g transform="translate(95,45)"><circle r="18" fill="#fef3c7"/><text y="3" font-size="14">☕</text><text y="32">B</text></g>
+            <g transform="translate(140,40)"><circle r="18" fill="#fde68a"/><text y="3" font-size="14">🍗</text><text y="32">C</text></g>
+            <g transform="translate(185,55)"><circle r="18" fill="#dbeafe"/><text y="3" font-size="14">🍕</text><text y="32">D</text></g>
+          </g>
+          <!-- Lines -->
+          <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3">
+            <line x1="55" y1="78" x2="65" y2="130"/>
+            <line x1="95" y1="63" x2="110" y2="130"/>
+            <line x1="140" y1="58" x2="145" y2="130"/>
+            <line x1="185" y1="73" x2="180" y2="130"/>
+          </g>
+        </svg>
+      </div>
+      <div>
+        <div class="card tint-blue" style="margin-bottom: 1rem;">
+          <h4 class="accent">Konsep</h4>
+          <p style="margin-top: .4rem;">Satu fasilitas fisik memproduksi untuk multi-merek virtual.</p>
+        </div>
+        <div class="card tint-blue">
+          <h4 class="accent">Implikasi Akuntansi</h4>
+          <p style="margin-top: .4rem;">Omzet terpisah per merek, beban menyatu di dapur fisik.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card tint-amber" style="margin-top: 1rem;">
+      <h4 class="amber">Sharing Cost</h4>
+      <p style="margin-top: .4rem;">Bahan baku, sewa tempat, listrik, gas — semua dibagi antar merek virtual.</p>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Model Bisnis</h3>
+    <h2>Dropship & Afiliator</h2>
+    <div class="illus">
+      <svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Supplier top -->
+        <g transform="translate(260,30)">
+          <circle r="26" fill="#dbeafe"/><text y="6" font-size="20" text-anchor="middle">🏭</text>
+          <text y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Supplier</text>
+        </g>
+        <!-- Buyer bottom left -->
+        <g transform="translate(80,160)">
+          <circle r="26" fill="#fef3c7"/><text y="6" font-size="20" text-anchor="middle">🧑</text>
+          <text y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Pembeli</text>
+        </g>
+        <!-- Dropshipper bottom right -->
+        <g transform="translate(440,160)">
+          <circle r="26" fill="#d1fae5"/><text y="6" font-size="20" text-anchor="middle">🏪</text>
+          <text y="48" text-anchor="middle" font-size="10" font-weight="600" fill="#475569" font-family="Inter">Dropshipper</text>
+        </g>
+        <!-- Arrows -->
+        <g stroke-width="2" fill="none">
+          <path d="M 230 55 Q 150 90 100 140" stroke="#3b82f6" stroke-dasharray="5 4" marker-end="url(#arrowBlue)"/>
+          <path d="M 130 165 L 410 165" stroke="#d97706" marker-end="url(#arrowAmber)"/>
+          <path d="M 425 140 Q 380 80 285 55" stroke="#d97706" marker-end="url(#arrowAmber)"/>
+        </g>
+        <defs>
+          <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#3b82f6"/>
+          </marker>
+          <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#d97706"/>
+          </marker>
+        </defs>
+        <text x="140" y="105" font-size="9" font-family="Inter" font-weight="600" fill="#3b82f6">📦 alur barang</text>
+        <text x="270" y="185" font-size="9" font-family="Inter" font-weight="600" fill="#d97706">💰 alur uang</text>
+      </svg>
+    </div>
+    <div class="grid g-2" style="margin-top: 1rem;">
+      <div class="card"><h4 class="accent">Dropship</h4><p>Jual tanpa gudang. Barang dikirim langsung oleh supplier.</p></div>
+      <div class="card"><h4 class="accent">Afiliator</h4><p>Sebar link produk, dapat komisi murni (Pendapatan Jasa).</p></div>
+    </div>
+    <div class="card tint-amber" style="margin-top: 1rem;">
+      <p><strong class="amber">Implikasi:</strong> Kartu Persediaan Fisik menjadi tidak relevan dalam sistem ini.</p>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 2 · Model Bisnis</h3>
+    <h2>Live Selling & Social Commerce</h2>
+    <div class="illus">
+      <svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Phone with live -->
+        <rect x="180" y="20" width="140" height="160" rx="16" fill="#0f172a"/>
+        <rect x="188" y="28" width="124" height="144" rx="10" fill="#fff"/>
+        <rect x="192" y="32" width="116" height="60" rx="6" fill="#fee2e2"/>
+        <text x="250" y="68" text-anchor="middle" font-size="20">🎤</text>
+        <circle cx="298" cy="42" r="5" fill="#dc2626">
+          <animate attributeName="opacity" values="1;.3;1" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <rect x="196" y="100" width="108" height="8" rx="3" fill="#e2e8f0"/>
+        <rect x="196" y="115" width="80" height="8" rx="3" fill="#e2e8f0"/>
+        <rect x="196" y="135" width="108" height="24" rx="6" fill="#fbbf24"/>
+        <text x="250" y="152" text-anchor="middle" font-size="10" fill="#78350f" font-weight="700">🛒 Keranjang</text>
+        <!-- Flash icons around -->
+        <g font-size="24">
+          <text x="80" y="60">⚡</text>
+          <text x="410" y="60">⚡</text>
+        </g>
+        <!-- Voucher tags -->
+        <g>
+          <rect x="30" y="130" width="90" height="30" rx="8" fill="#dc2626"/>
+          <text x="75" y="150" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">-50% Voucher</text>
+        </g>
+        <g>
+          <rect x="380" y="130" width="90" height="30" rx="8" fill="#dc2626"/>
+          <text x="425" y="150" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">-50% Voucher</text>
+        </g>
+      </svg>
+    </div>
+    <div class="grid g-3" style="margin-top: 1rem;">
+      <div class="card tint-blue"><div class="num">01</div><h4>Uang Super Cepat</h4><p>Impulse buying dalam hitungan menit.</p></div>
+      <div class="card tint-red"><div class="num red">02</div><h4>Retur Sangat Tinggi</h4><p>Batal instan saat live masih berjalan.</p></div>
+      <div class="card tint-amber"><div class="num amber">03</div><h4>Distorsi Harga</h4><p>Voucher & bakar uang merusak nilai wajar.</p></div>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Realita Finansial: Gross vs Net</h2>
+    <div class="illus">
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg">
+        <!-- Pipe -->
+        <rect x="30" y="70" width="500" height="40" rx="20" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <!-- Gross inflow -->
+        <path d="M 0 90 Q 15 90 30 90" stroke="#3b82f6" stroke-width="20" fill="none" stroke-linecap="round"/>
+        <text x="35" y="60" font-size="11" fill="#3b82f6" font-weight="700" font-family="Inter">Rp10.000.000</text>
+        <!-- Valves -->
+        <g transform="translate(160,90)">
+          <circle r="14" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="700">✕</text>
+          <text y="34" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="600" font-family="Inter">Fee Admin</text>
+        </g>
+        <g transform="translate(280,90)">
+          <circle r="14" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="700">✕</text>
+          <text y="34" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="600" font-family="Inter">Ongkir</text>
+        </g>
+        <g transform="translate(400,90)">
+          <circle r="14" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+          <text y="4" text-anchor="middle" font-size="10" fill="#dc2626" font-weight="700">✕</text>
+          <text y="34" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="600" font-family="Inter">MDR</text>
+        </g>
+        <!-- Net output -->
+        <rect x="530" y="55" width="90" height="70" rx="10" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+        <text x="575" y="80" text-anchor="middle" font-size="9" fill="#065f46" font-weight="600" font-family="Inter">Net</text>
+        <text x="575" y="98" text-anchor="middle" font-size="10" fill="#059669" font-weight="800" font-family="Inter">Rp8.500.000</text>
+        <text x="575" y="113" text-anchor="middle" font-size="8" fill="#065f46" font-family="Inter">ke bank</text>
+      </svg>
+    </div>
+    <div class="card tint-amber" style="margin-top: 1rem;">
+      <p>Selisih Rp1.500.000 adalah <strong>murni beban platform</strong>, <span class="red">BUKAN</span> penurunan harga jual barang.</p>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Struktur Biaya Platform</h2>
+    <div class="grid g-4">
+      <div class="card tint-amber"><h4>Biaya Admin</h4><div class="big amber">2%–6%</div><p>Kategori barang</p></div>
+      <div class="card tint-amber"><h4>Bebas Ongkir</h4><div class="big amber">1%–4%</div><p>Biaya layanan</p></div>
+      <div class="card tint-amber"><h4>MDR QRIS</h4><div class="big amber">0,3%–0,7%</div><p>Potongan transaksi</p></div>
+      <div class="card tint-amber"><h4>Withdrawal</h4><div class="big amber">Flat</div><p>Penarikan saldo</p></div>
+    </div>
+    <div class="card" style="margin-top: 1.4rem;">
+      <p><strong>Klasifikasi Akuntansi:</strong> Seluruh potongan otomatis ini diakui sebagai <span class="accent">Beban Administrasi Bank</span> atau <span class="accent">Beban Penjualan</span> pada Jurnal Penyesuaian.</p>
+    </div>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Biaya Akuisisi & Operasional Lanjutan</h2>
+    <p>Biaya modern tidak dipotong otomatis oleh aplikasi, namun porsi terbesar dari pengeluaran pedagang digital.</p>
+    <ul class="clean">
+      <li>Harga Pokok Penjualan (HPP) Fisik</li>
+      <li>Customer Acquisition Cost — Iklan Digital (FB, IG, Ads)</li>
+      <li>KOL / Influencer Fee — Endorsement & ulasan produk</li>
+      <li>Sharing Cost Utilitas — Sewa, listrik, gas untuk operasional multibrand</li>
+    </ul>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Transformasi Dokumen Sumber</h2>
+    <div class="compare">
+      <div class="old">
+        <h4 class="red">Konvensional</h4>
+        <p>Tumpukan kertas fisik: invoice, nota, kwitansi, struk. Arsip menumpuk, sulit dilacak, rawan hilang.</p>
+      </div>
+      <div class="new">
+        <h4 class="green">Digital</h4>
+        <p style="margin-bottom: .8rem;">Ekstraksi raw data & bukti elektronik:</p>
+        <pre class="code">CSV · PDF · e-Wallet
+e-Invoice · e-Faktur
+Bukti Potong Elektronik</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Standar Jurnal Transaksi Digital</h2>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab(event, 'fase1')">Fase 1 · Pending Dana</button>
+      <button class="tab" onclick="showTab(event, 'fase2')">Fase 2 · Settled / Cair</button>
+    </div>
+    <div id="fase1" class="tab-content active">
+      <table class="journal">
+        <thead><tr><th>Debit (D)</th><th>Kredit (K)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="debit">Piutang Platform / Piutang Shopee</td>
+            <td class="kredit">Penjualan Dagang</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 1rem; font-size: .9rem;">Dana masih tertahan di escrow. Pendapatan diakui, tetapi kas belum diterima.</p>
+    </div>
+    <div id="fase2" class="tab-content">
+      <table class="journal">
+        <thead><tr><th>Debit (D)</th><th>Kredit (K)</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="debit">Kas Bank</td>
+            <td class="kredit">Piutang Platform / Piutang Shopee</td>
+          </tr>
+          <tr>
+            <td class="debit">Beban Admin Platform</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top: 1rem; font-size: .9rem;">Dana cair ke rekening, potongan platform diakui sebagai beban.</p>
+    </div>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Buku Pembantu & Kartu Pencatatan</h2>
+    <div class="grid g-2">
+      <div class="card tint-blue">
+        <h4 class="accent">Kartu Persediaan</h4>
+        <p style="margin-top: .4rem;">Update real-time (FIFO/Average). Wajib terkalibrasi harian akibat transaksi otomatis 24 jam.</p>
+      </div>
+      <div class="card tint-blue">
+        <h4 class="accent">Kartu Piutang</h4>
+        <p style="margin-top: .4rem;">Pelacak dana escrow — melacak order mana yang pembayarannya masih ditahan platform.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 1.1rem;">
+      <p><strong>Kunci:</strong> No. Order Marketplace (SHOPEE-12345, TOKOPEDIA-67890) menjadi identitas pelacakan.</p>
+    </div>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Akuntansi Digital</h3>
+    <h2>Rekonsiliasi MDR: Mengatasi Selisih</h2>
+    <div class="grid g-2">
+      <div class="card" style="border-left: 4px solid var(--blue);">
+        <h4>Total Kasir / POS</h4>
+        <div class="big accent" style="margin-top: .4rem;">Rp1.500.000</div>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--green);">
+        <h4>Mutasi Masuk Bank</h4>
+        <div class="big green" style="margin-top: .4rem;">Rp1.490.000</div>
+      </div>
+    </div>
+    <div class="card tint-red" style="margin-top: 1.1rem;">
+      <p>Selisih <strong class="red">Rp10.000</strong> = Potongan MDR (Merchant Discount Rate)</p>
+      <p style="font-size: .88rem; margin-top: .4rem;">Wajib diproses sebagai outstanding/pending transfer dalam jurnal penyesuaian.</p>
+    </div>
+
+    <!-- QUIZ 2 -->
+    <div class="quiz" data-quiz="q2" data-points="50">
+      <div class="q-label">🎯 Kuis Mini <span class="reward">+50 pts</span></div>
+      <div class="q-text">Selisih Rp10.000 antara kasir dan mutasi bank seharusnya dicatat sebagai apa?</div>
+      <div class="options">
+        <button class="option" data-correct="false"><span class="marker">A</span> Kehilangan kas (Cash Loss)</button>
+        <button class="option" data-correct="true"><span class="marker">B</span> Beban MDR / Beban Administrasi Bank</button>
+        <button class="option" data-correct="false"><span class="marker">C</span> Piutang kepada pelanggan</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Pajak</h3>
+    <h2>Koreksi Fatal: Peredaran Bruto</h2>
+    <div class="compare">
+      <div class="old">
+        <h4 class="red">✕ Miskonsepsi UMKM</h4>
+        <p style="font-size: 1.05rem; color: var(--ink); margin-top: .6rem; font-weight: 600;">Pajak = Uang Cair × 0,5%</p>
+        <p style="margin-top: .6rem;">Menghitung pajak dari dana bersih (Net) yang diterima dari marketplace. <span class="red">SALAH.</span></p>
+      </div>
+      <div class="new">
+        <h4 class="green">✓ Aturan Mutlak KUP</h4>
+        <p style="font-size: 1.05rem; color: var(--ink); margin-top: .6rem; font-weight: 600;">Pajak = Harga Jual Barang × 0,5%</p>
+        <p style="margin-top: .6rem;">Peredaran Bruto adalah murni <strong>Gross Turnover</strong> sebelum dipotong komisi platform atau biaya ekspedisi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Pajak</h3>
+    <h2>Kelayakan Pajak UMKM</h2>
+    <p>PP 20 Tahun 2026 · Batas omzet tetap &lt; Rp4,8 Miliar / Tahun</p>
+    <div class="grid g-2" style="margin-top: 1.2rem;">
+      <div class="card tint-green" style="border-left: 4px solid var(--green);">
+        <h4 class="green">✓ Subjek Berhak · Tarif 0,5%</h4>
+        <ul class="clean">
+          <li>Orang Pribadi (OP)</li>
+          <li>CV (Commanditaire Vennootschap)</li>
+          <li>PT Perorangan</li>
+          <li>Koperasi</li>
+        </ul>
+      </div>
+      <div class="card tint-red" style="border-left: 4px solid var(--red);">
+        <h4 class="red">✕ Tidak Berhak · Tarif Normal Badan</h4>
+        <ul class="clean">
+          <li>Firma</li>
+          <li>PT Biasa (Persekutuan Modal)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 22 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Pajak</h3>
+    <h2>Peta Arus PPN PMSE</h2>
+    <div class="illus">
+      <svg viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg">
+        <!-- Triangle -->
+        <g stroke-width="2" fill="none" stroke-dasharray="5 4">
+          <line x1="240" y1="60" x2="100" y2="180" stroke="#3b82f6"/>
+          <line x1="240" y1="60" x2="380" y2="180" stroke="#3b82f6"/>
+          <line x1="100" y1="180" x2="380" y2="180" stroke="#3b82f6"/>
+        </g>
+        <!-- Platform top -->
+        <g transform="translate(240,50)">
+          <circle r="42" fill="url(#gradBlue)"/>
+          <text y="-4" text-anchor="middle" font-size="10" fill="#dbeafe" font-family="Inter" font-weight="600">PLATFORM</text>
+          <text y="10" text-anchor="middle" font-size="9" fill="#fff" font-family="Inter" font-weight="700">Pemungut</text>
+          <text y="22" text-anchor="middle" font-size="8" fill="#dbeafe" font-family="Inter">PPN PMSE</text>
+        </g>
+        <!-- Merchant left -->
+        <g transform="translate(80,190)">
+          <circle r="42" fill="url(#gradAmber)"/>
+          <text y="-2" text-anchor="middle" font-size="10" fill="#fff" font-family="Inter" font-weight="700">Merchant</text>
+          <text y="12" text-anchor="middle" font-size="8" fill="#fef3c7" font-family="Inter">PKP · PPN 11%</text>
+        </g>
+        <!-- Consumer right -->
+        <g transform="translate(400,190)">
+          <circle r="42" fill="url(#gradGreen)"/>
+          <text y="-2" text-anchor="middle" font-size="10" fill="#fff" font-family="Inter" font-weight="700">Konsumen</text>
+          <text y="12" text-anchor="middle" font-size="8" fill="#d1fae5" font-family="Inter">Pembeli akhir</text>
+        </g>
+        <!-- Arrow marker -->
+        <defs>
+          <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#059669"/>
+          </marker>
+        </defs>
+        <path d="M 130 185 L 350 185" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 23 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Pajak</h3>
+    <h2>PPh 21 untuk Kreator & Influencer</h2>
+    <div class="flow">
+      <div class="step"><span class="n">1</span>UMKM Merchant<br><span style="font-size: .76rem; color: var(--ink-mute);">Kesepakatan harga endorsement</span></div>
+      <span class="arrow">→</span>
+      <div class="step" style="border-color: #fecaca;"><span class="n red">2</span>POTONG PPh 21<br><span style="font-size: .76rem; color: var(--ink-mute);">Sebelum transfer</span></div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">3</span>Content Creator<br><span style="font-size: .76rem; color: var(--ink-mute);">Terima fee bersih + bukti potong</span></div>
+    </div>
+    <div class="card" style="margin-top: 1.4rem;">
+      <p>Wajib dipotong sebelum dana ditransfer sebagai <strong>jasa tenaga ahli / bukan pegawai</strong>.</p>
+    </div>
+  </section>
+
+  <!-- 24 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Otomatisasi</h3>
+    <h2>Spreadsheet Management</h2>
+    <div class="grid g-2">
+      <div class="card tint-blue"><h4 class="accent">VLOOKUP / INDEX MATCH</h4><p style="margin-top: .4rem;">Otomatisasi penyandingan ID Produk dan Harga.</p></div>
+      <div class="card tint-blue"><h4 class="accent">PIVOT TABLE</h4><p style="margin-top: .4rem;">Ringkas puluhan ribu raw data jadi rekap siap jurnal.</p></div>
+    </div>
+    <pre class="code" style="margin-top: 1.2rem;">Date       | Transaction ID | Description   | Amount   | Tax   | Fee   | Status
+2024-05-21 | TXN-123456     | Sales Revenue | 1500000  | 150000| 50000 | completed</pre>
+  </section>
+
+  <!-- 25 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 3 · Otomatisasi</h3>
+    <h2>Cloud Accounting</h2>
+    <div class="grid g-3">
+      <div class="card"><div class="icon-circle">↻</div><h4>Tarikan Data Mulus</h4><p>Dari ekosistem digital langsung ke sistem.</p></div>
+      <div class="card"><div class="icon-circle a">⚡</div><h4>Neraca Lajur Real-Time</h4><p>Laporan keuangan tersusun presisi.</p></div>
+      <div class="card"><div class="icon-circle g">✓</div><h4>Satu Klik</h4><p>Siklus akuntansi tereksekusi.</p></div>
+    </div>
+  </section>
+
+  <!-- 26 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 4 · Proyek</h3>
+    <h2>Cetak Biru Proyek Semester</h2>
+    <p>Misi 1 semester (4–6 bulan): Siswa membangun bisnis dari nol hingga Laporan Keuangan akhir berdasarkan 4 CP Akuntansi Fase F.</p>
+    <div class="illus" style="margin-top: 1.4rem;">
+      <svg viewBox="0 0 640 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- Roadmap curve -->
+        <path d="M 40 80 Q 200 20 320 70 Q 460 110 600 40"
+              fill="none" stroke="url(#gradBlue)" stroke-width="3" stroke-linecap="round"/>
+        <!-- Milestones -->
+        <g font-family="Inter" font-size="10" font-weight="700">
+          <g transform="translate(80,80)">
+            <circle r="14" fill="#fff" stroke="#2563eb" stroke-width="3"/>
+            <text y="4" text-anchor="middle" fill="#2563eb" font-size="11">1</text>
+            <text y="34" text-anchor="middle" fill="#475569" font-size="9">Setup</text>
+          </g>
+          <g transform="translate(240,60)">
+            <circle r="14" fill="#fff" stroke="#7c3aed" stroke-width="3"/>
+            <text y="4" text-anchor="middle" fill="#7c3aed" font-size="11">2</text>
+            <text y="34" text-anchor="middle" fill="#475569" font-size="9">Data</text>
+          </g>
+          <g transform="translate(400,72)">
+            <circle r="14" fill="#fff" stroke="#d97706" stroke-width="3"/>
+            <text y="4" text-anchor="middle" fill="#d97706" font-size="11">3</text>
+            <text y="34" text-anchor="middle" fill="#475569" font-size="9">Jurnal</text>
+          </g>
+          <g transform="translate(560,48)">
+            <circle r="14" fill="#fff" stroke="#059669" stroke-width="3"/>
+            <text y="4" text-anchor="middle" fill="#059669" font-size="11">4</text>
+            <text y="34" text-anchor="middle" fill="#475569" font-size="9">Pajak</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="grid g-4" style="margin-top: 1.2rem;">
+      <div class="card tint-blue"><div class="num">FASE 1</div><h4>Bulan 1</h4><p>Setup Bisnis & Admin</p></div>
+      <div class="card tint-violet"><div class="num" style="color: var(--violet);">FASE 2</div><h4>Bulan 2</h4><p>Manajemen Data & Kartu</p></div>
+      <div class="card tint-amber"><div class="num">FASE 3</div><h4>Bulan 3–4</h4><p>Transaksi & Siklus Jurnal</p></div>
+      <div class="card tint-green"><div class="num" style="color: var(--green);">FASE 4</div><h4>Bulan 5–6</h4><p>Eksekusi Pajak & Finalisasi</p></div>
+    </div>
+  </section>
+
+  <!-- 27 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 4 · Fase 1</h3>
+    <h2>Setup Bisnis & Administrasi</h2>
+    <ul class="clean">
+      <li>Mengidentifikasi target pasar & model bisnis (BMC)</li>
+      <li>Menyusun struktur organisasi: Direktur, Admin, Keuangan</li>
+      <li>Menyusun SOP pesanan dan alur operasional</li>
+      <li>Membuat digital dashboard & blueprint toko online</li>
+    </ul>
+    <p style="margin-top: 1rem; font-size: .9rem;">Contoh: thrift fashion, F&B live streaming, dropship produk lokal.</p>
+  </section>
+
+  <!-- 28 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 4 · Fase 2</h3>
+    <h2>Manajemen Data & Akuntansi Keuangan</h2>
+    <ul class="clean">
+      <li>Membuat Kartu Persediaan metode FIFO / Average</li>
+      <li>Memproses dokumen kas kecil khusus top-up saldo biaya iklan digital (Ads)</li>
+      <li>Membuat Kartu Piutang untuk pelacakan dana Escrow Platform</li>
+    </ul>
+  </section>
+
+  <!-- 29 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 4 · Fase 3</h3>
+    <h2>Transaksi & Siklus Dagang</h2>
+    <div class="flow">
+      <div class="step"><span class="n">INPUT</span>Simulasi 40 Bukti Transaksi Digital</div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">PROCESS</span>Analisis & Penjurnalan</div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">PROCESS</span>Posting Buku Besar & Neraca Lajur</div>
+      <span class="arrow">→</span>
+      <div class="step"><span class="n">OUTPUT</span>Laba/Rugi, Perubahan Modal, Neraca, Arus Kas</div>
+    </div>
+    <p style="margin-top: 1.4rem;">Bukti mencakup: Checkout, MDR QRIS, Resi Kurir.</p>
+  </section>
+
+  <!-- 30 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 4 · Fase 4</h3>
+    <h2>Finalisasi Pajak & Grand Closing</h2>
+    <ul class="clean">
+      <li>Menarik angka Laba/Rugi untuk mencari nilai Peredaran Bruto</li>
+      <li>Menghitung Pajak Terutang 0,5% (PP 20/2026)</li>
+      <li>Kalibrasi Output menuju Standar Uji Kompetensi Keahlian (UKK)</li>
+    </ul>
+    <div class="big-quote">
+      Akuntansi Fase F: Menjadikan siswa jembatan analitik antara teknologi dan bisnis.
+    </div>
+  </section>
+
+  <!-- 31 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>Masalah Pacing yang Sebenarnya</h2>
+    <ul class="clean">
+      <li>Siswa heterogen: ada yang belum paham debit/kredit, ada yang sudah bisa</li>
+      <li>Guru harus maju sesuai kurikulum, tapi sebagian kelas tertinggal</li>
+      <li>Remedial klasikal tidak cukup; guru tidak punya waktu satu-satu</li>
+      <li>Akuntansi digital malah menambah beban kalau dasar belum tuntas</li>
+      <li>Akhirnya: siswa frustrasi, guru kelelahan, materi digital tidak tersentuh</li>
+    </ul>
+  </section>
+
+  <!-- 32 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>AI sebagai Tutor untuk Siswa</h2>
+    <div class="grid g-2">
+      <div class="card tint-blue"><h4 class="accent">Diagnostik Awal</h4><p>Cek pemahaman debit/kredit, jurnal, buku besar sebelum masuk materi baru.</p></div>
+      <div class="card tint-blue"><h4 class="accent">Adaptive Path</h4><p>Jalur remedial, reguler, dan pengayaan sesuai kesiapan siswa.</p></div>
+      <div class="card tint-blue"><h4 class="accent">Mastery Learning</h4><p>Belum tuntas, belum lanjut. AI menjaga ritme individu.</p></div>
+      <div class="card tint-blue"><h4 class="accent">Feedback Cepat</h4><p>Koreksi jurnal, tunjuk salah debit/kredit, beri petunjuk — bukan jawaban.</p></div>
+    </div>
+  </section>
+
+  <!-- 33 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>AI sebagai Mentor untuk Siswa</h2>
+    <ul class="clean">
+      <li>Membantu memilih model bisnis proyek semester</li>
+      <li>Menyusun milestone Fase 1–4</li>
+      <li>Refleksi: apa yang salah dari jurnal, apa yang bisa diperbaiki</li>
+      <li>Arah karier: financial data analyst, staf pajak, entrepreneur digital</li>
+      <li>Bertanya, bukan langsung memberi jawaban</li>
+    </ul>
+  </section>
+
+  <!-- 34 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>AI untuk Guru</h2>
+    <div class="grid g-3">
+      <div class="card"><h4 class="accent">Co-Planner</h4><p>Susun RPP, modul, rubrik bersama AI.</p></div>
+      <div class="card"><h4 class="accent">Pacing Assistant</h4><p>Rekomendasi kapan remedial, kapan lanjut.</p></div>
+      <div class="card"><h4 class="accent">Assessment Analyzer</h4><p>Analisis pola kesalahan siswa.</p></div>
+      <div class="card"><h4 class="accent">Content Generator</h4><p>Variasi soal, kasus, kuis.</p></div>
+      <div class="card"><h4 class="accent">Early Warning</h4><p>Tandai siswa yang tertinggal.</p></div>
+      <div class="card"><h4 class="accent">Tutor Update</h4><p>Update aturan pajak, MDR, QRIS.</p></div>
+    </div>
+  </section>
+
+  <!-- 35 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>Contoh Prompt AI</h2>
+    <div class="hint-chip">Klik prompt untuk menyalin</div>
+    <h4 style="color: var(--blue); margin-top: .5rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .1em;">Untuk Guru</h4>
+    <div class="prompt" data-copy>Buat 3 level latihan jurnal dasar: remedial, reguler, pengayaan.</div>
+    <div class="prompt" data-copy>Dari data nilai ini, siapa yang belum tuntas dan apa rekomendasi pacing-nya?</div>
+    <h4 style="color: var(--blue); margin-top: 1.2rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .1em;">Untuk Siswa</h4>
+    <div class="prompt" data-copy>Jelaskan debit/kredit pakai analogi sederhana, lalu beri aku 5 soal.</div>
+    <div class="prompt" data-copy>Koreksi jurnalku, jangan kasih jawaban, tunjuk yang salah.</div>
+    <h4 style="color: var(--blue); margin-top: 1.2rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .1em;">Untuk Mentor</h4>
+    <div class="prompt" data-copy>Tanya aku satu per satu soal BMC, jangan langsung jawab.</div>
+  </section>
+
+  <!-- 36 -->
+  <section class="slide">
+    <h3 class="kicker">Bagian 5 · AI & Pacing</h3>
+    <h2>Guardrails & Etika</h2>
+    <div class="grid g-2">
+      <div class="card tint-green" style="border-left: 4px solid var(--green);">
+        <h4 class="green">✓ Lakukan</h4>
+        <p style="margin-top: .4rem;">Verifikasi jurnal & data oleh guru/siswa. Jaga privasi. Gunakan AI untuk menuntun.</p>
+      </div>
+      <div class="card tint-red" style="border-left: 4px solid var(--red);">
+        <h4 class="red">✕ Hindari</h4>
+        <p style="margin-top: .4rem;">Unggah data pribadi. Biarkan AI mengerjakan. Lepas kendali pedagogis dari guru.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 1.1rem;">
+      <p><strong>Prinsip:</strong> AI alat bantu, bukan pengganti guru. Guru tetap fasilitator.</p>
+    </div>
+
+    <!-- QUIZ 3 -->
+    <div class="quiz" data-quiz="q3" data-points="50">
+      <div class="q-label">🎯 Kuis Mini <span class="reward">+50 pts</span></div>
+      <div class="q-text">Peran AI yang tepat dalam pembelajaran akuntansi adalah…</div>
+      <div class="options">
+        <button class="option" data-correct="false"><span class="marker">A</span> Menggantikan guru sepenuhnya</button>
+        <button class="option" data-correct="false"><span class="marker">B</span> Mengerjakan tugas siswa agar cepat selesai</button>
+        <button class="option" data-correct="true"><span class="marker">C</span> Menuntun, memberi feedback, menjaga pacing — guru tetap fasilitator</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </section>
+
+  <!-- 37 · PENUTUP -->
+  <section class="slide">
+    <div class="pill">Penutup</div>
+    <h1 class="hero-title" style="font-size: clamp(1.6rem, 3.4vw, 2.6rem); line-height: 1.2;">
+      AI membantu menuntaskan <span class="accent">konvensional</span> dulu,<br>
+      baru bertahap ke <span class="green">akuntansi bisnis digital</span>.
+    </h1>
+    <p class="lead" style="margin-top: 1.4rem;">Guru tetap fasilitator. AI alat bantu pacing. Siswa tumbuh sesuai ritmenya.</p>
+    <div class="finish-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle class="ring-bg" cx="80" cy="80" r="68" fill="none" stroke-width="10"/>
+        <circle class="ring-fg" cx="80" cy="80" r="68" fill="none" stroke-width="10"
+                stroke-dasharray="427" stroke-dashoffset="427" id="finishRing"/>
+      </svg>
+      <div class="ring-text">
+        <span class="pct" id="finishPct">0%</span>
+        <span class="lbl">Selesai</span>
+      </div>
+    </div>
+    <div class="divider" style="margin-top: 2rem;"></div>
+    <p style="font-size: .9rem;">Digital Business Ecosystem for Accounting Teacher · <strong>Firhan Fahamzha</strong></p>
+  </section>
+
+</div>
+
+<div id="dots"></div>
+
+<div id="controls">
+  <button class="btn" onclick="prev()" aria-label="Sebelumnya">←</button>
+  <button class="btn" onclick="next()" aria-label="Selanjutnya">→</button>
+  <button class="btn" onclick="toggleHelp()" aria-label="Bantuan">?</button>
+</div>
+
+<div id="help" onclick="if(event.target.id==='help')toggleHelp()">
+  <div class="box">
+    <h3>Navigasi Presentasi</h3>
+    <ul>
+      <li><span>Slide berikutnya</span><span><kbd>→</kbd> <kbd>Space</kbd></span></li>
+      <li><span>Slide sebelumnya</span><kbd>←</kbd></li>
+      <li><span>Slide pertama</span><kbd>Home</kbd></li>
+      <li><span>Slide terakhir</span><kbd>End</kbd></li>
+      <li><span>Buka/tutup bantuan</span><kbd>?</kbd></li>
+      <li><span>Tutup bantuan</span><kbd>Esc</kbd></li>
+    </ul>
+    <p style="margin-top: 1rem; font-size: .85rem; color: var(--ink-mute);">Di layar sentuh: geser kiri/kanan. Poin ⭐ dan badge akan kamu kumpulkan sepanjang presentasi.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="badge-big" id="toastIcon">🏆</div>
+  <div class="toast-text">
+    <strong id="toastTitle">Badge Terbuka!</strong>
+    <span id="toastDesc">Kamu mendapat lencana baru.</span>
+  </div>
+</div>
+
+<script>
+  /* ============ STATE ============ */
+  const state = {
+    points: 0,
+    quizzesCorrect: 0,
+    visited: new Set([0]),
+    badges: new Set(),
+  };
+
+  const BADGES = {
+    explorer: { icon: '🧭', title: 'Badge: Penjelajah', desc: 'Kamu membuka 10 slide pertama.' },
+    quizmaster: { icon: '🎓', title: 'Badge: Quizmaster', desc: 'Semua kuis dijawab dengan benar.' },
+    finisher: { icon: '🏆', title: 'Badge: Finisher', desc: 'Kamu menyelesaikan seluruh presentasi!' },
+  };
+
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  /* ============ HUD ============ */
+  function updateHUD() {
+    document.getElementById('hudPoints').textContent = state.points;
+    document.getElementById('hudQuizzes').textContent = state.quizzesCorrect;
+    document.querySelectorAll('.badge-mini').forEach(el => {
+      if (state.badges.has(el.dataset.badge)) el.classList.add('earned');
+    });
+  }
+
+  function addPoints(n, x, y) {
+    state.points += n;
+    updateHUD();
+    // floating points
+    const fp = document.createElement('div');
+    fp.className = 'float-points';
+    fp.textContent = '+' + n;
+    fp.style.left = (x || window.innerWidth / 2) + 'px';
+    fp.style.top = (y || window.innerHeight / 2) + 'px';
+    document.body.appendChild(fp);
+    setTimeout(() => fp.remove(), 1500);
+    // pulse HUD
+    const hudPts = document.getElementById('hudPoints');
+    hudPts.classList.remove('pulse');
+    void hudPts.offsetWidth;
+    hudPts.classList.add('pulse');
+  }
+
+  function awardBadge(id) {
+    if (state.badges.has(id)) return;
+    state.badges.add(id);
+    updateHUD();
+    const badge = BADGES[id];
+    const toast = document.getElementById('toast');
+    document.getElementById('toastIcon').textContent = badge.icon;
+    document.getElementById('toastTitle').textContent = badge.title;
+    document.getElementById('toastDesc').textContent = badge.desc;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3200);
+    // bonus points
+    addPoints(25);
+  }
+
+  function checkBadges() {
+    if (state.visited.size >= 10 && !state.badges.has('explorer')) awardBadge('explorer');
+    if (state.quizzesCorrect >= 3 && !state.badges.has('quizmaster')) {
+      setTimeout(() => awardBadge('quizmaster'), 600);
+    }
+    if (current === total - 1 && !state.badges.has('finisher')) {
+      setTimeout(() => {
+        awardBadge('finisher');
+        launchConfetti();
+      }, 800);
+    }
+  }
+
+  /* ============ NAVIGATION ============ */
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    const activeDot = dots[current];
+    if (activeDot && activeDot.scrollIntoView) {
+      activeDot.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+    document.getElementById('counter').textContent =
+      String(current + 1).padStart(2, '0') + ' / ' + total;
+    document.getElementById('progress').style.width =
+      ((current + 1) / total * 100) + '%';
+    state.visited.add(current);
+    // Animate finish ring on last slide
+    if (current === total - 1) {
+      setTimeout(animateFinishRing, 400);
+    }
+    checkBadges();
+  }
+
+  function animateFinishRing() {
+    const ring = document.getElementById('finishRing');
+    const pct = document.getElementById('finishPct');
+    const target = Math.min(100, Math.round(state.points / 200 * 100));
+    const circumference = 427;
+    ring.style.strokeDashoffset = circumference - (circumference * target / 100);
+    let cur = 0;
+    const int = setInterval(() => {
+      cur += Math.max(1, Math.ceil(target / 30));
+      if (cur >= target) { cur = target; clearInterval(int); }
+      pct.textContent = cur + '%';
+    }, 30);
+  }
+
+  function next() { if (current < total - 1) { current++; render(); } }
+  function prev() { if (current > 0) { current--; render(); } }
+  function goTo(i) { current = Math.max(0, Math.min(total - 1, i)); render(); }
+
+  /* ============ DOTS ============ */
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+  const dots = dotsEl.querySelectorAll('.dot');
+
+  /* ============ KEYBOARD ============ */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    else if (e.key === 'End') { e.preventDefault(); goTo(total - 1); }
+    else if (e.key === '?') { toggleHelp(); }
+    else if (e.key === 'Escape') { document.getElementById('help').classList.remove('show'); }
+  });
+
+  /* ============ TOUCH ============ */
+  let touchStartX = 0, touchStartY = 0, touchTime = 0;
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchTime = Date.now();
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const dt = Date.now() - touchTime;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) && dt < 800) {
+      dx < 0 ? next() : prev();
+    }
+  }, { passive: true });
+
+  /* ============ WHEEL ============ */
+  let wheelLock = false;
+  document.addEventListener('wheel', e => {
+    if (wheelLock) return;
+    if (Math.abs(e.deltaY) < 30) return;
+    wheelLock = true;
+    e.deltaY > 0 ? next() : prev();
+    setTimeout(() => wheelLock = false, 700);
+  }, { passive: true });
+
+  /* ============ HELP ============ */
+  function toggleHelp() { document.getElementById('help').classList.toggle('show'); }
+  function showTab(e, id) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* ============ QUIZ ============ */
+  document.querySelectorAll('.quiz').forEach(quiz => {
+    const buttons = quiz.querySelectorAll('.option');
+    const feedback = quiz.querySelector('.feedback');
+    const points = parseInt(quiz.dataset.points, 10) || 50;
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (quiz.classList.contains('solved')) return;
+        const correct = btn.dataset.correct === 'true';
+        if (correct) {
+          btn.classList.add('correct');
+          feedback.className = 'feedback show ok';
+          feedback.textContent = '✓ Tepat! Poin ditambahkan.';
+          quiz.classList.add('solved');
+          buttons.forEach(b => b.disabled = true);
+          state.quizzesCorrect++;
+          const rect = btn.getBoundingClientRect();
+          addPoints(points, rect.left + rect.width / 2, rect.top);
+          updateHUD();
+          checkBadges();
+        } else {
+          btn.classList.add('wrong');
+          btn.disabled = true;
+          feedback.className = 'feedback show no';
+          feedback.textContent = '✕ Belum tepat. Coba opsi lain.';
+          setTimeout(() => {
+            btn.classList.remove('wrong');
+            btn.disabled = false;
+          }, 1200);
+        }
+      });
+    });
+  });
+
+  /* ============ PROMPT COPY ============ */
+  document.querySelectorAll('.prompt[data-copy]').forEach(p => {
+    p.addEventListener('click', () => {
+      const text = p.textContent.trim();
+      navigator.clipboard?.writeText(text);
+      const orig = p.style.background;
+      p.style.background = '#d1fae5';
+      setTimeout(() => p.style.background = orig, 600);
+    });
+  });
+
+  /* ============ CONFETTI ============ */
+  function launchConfetti() {
+    const colors = ['#2563eb', '#7c3aed', '#d97706', '#059669', '#db2777', '#fbbf24'];
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.top = '-20px';
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
+      c.style.animationDuration = (2 + Math.random() * 2) + 's';
+      c.style.animationDelay = (Math.random() * 0.5) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 5000);
+    }
+  }
+
+  /* ============ INIT ============ */
+  updateHUD();
+  render();
+</script>
+</body>
+</html>
